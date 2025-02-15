@@ -20,14 +20,14 @@ def interact_with_user():
         filename = input()
         try:
             with open(filename) as f:
-                eps = float(f.readline())
+                eps = float(f.readline().replace(',', '.'))
                 n = int(f.readline())
-                if n > 20:
+                if n > 20 or n < 1:
                     raise ValueError
                 matrix = []
                 right_matrix = []
                 for i in range(n):
-                    line = list(map(float, f.readline().split()))
+                    line = list(map(float, f.readline().replace(',', '.').split()))
                     if len(line) != n + 1:
                         raise ValueError
                     matrix.append(line[:-1])
@@ -38,11 +38,14 @@ def interact_with_user():
         except ValueError or IndexError:
             print('Data is incorrect')
             return
+        except Exception as e:
+            print('Error while opening the file:', e)
+            return
     else:
         eps = input('Enter epsilon: ')
         while True:
             try:
-                eps = float(eps)
+                eps = float(eps.replace(',', '.'))
                 break
             except ValueError:
                 print('Wrong input, try again')
@@ -51,7 +54,7 @@ def interact_with_user():
         while True:
             try:
                 n = int(n)
-                if n > 20:
+                if n > 20 or n < 1:
                     raise ValueError
                 break
             except ValueError:
@@ -61,7 +64,7 @@ def interact_with_user():
         for i in range(n):
             while True:
                 try:
-                    line = list(map(float, input().split()))
+                    line = list(map(float, input().replace(',', '.').split()))
                     if len(line) != n + 1:
                         raise ValueError
                     break

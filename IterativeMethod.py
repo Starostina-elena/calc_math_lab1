@@ -21,7 +21,12 @@ class IterativeMethod:
             print('Need to permutate matrix')
             self.permutate_matrix()
         if not self.check_diagonal():
-            print('Diagonal elements are not dominant')
+            print('Diagonal elements are not dominant, quit')
+            return
+        norm = self.calc_norm()
+        if norm > 1:
+            print('Norm > 1, quit')
+            return
         self.go()
 
     def make_iteration(self):
@@ -44,7 +49,7 @@ class IterativeMethod:
     def go(self):
         self.make_iteration()
         while not self.check_stop():
-            if self.cur_iter_number >= 100:
+            if self.cur_iter_number >= 1000:
                 print('Too many iterations')
                 return
             self.make_iteration()
@@ -66,15 +71,16 @@ class IterativeMethod:
         return flag
 
     def permutate_matrix(self):
-        for i in range(self.n):
-            max_el = self.matrix[i][i]
-            correct_row = i
-            for j in range(i + 1, self.n):
-                if abs(self.matrix[i][j]) > max_el:
-                    max_el = self.matrix[i][j]
-                    correct_row = j
-            self.matrix[i], self.matrix[correct_row] = self.matrix[correct_row], self.matrix[i]
-            self.right_matrix[i], self.right_matrix[correct_row] = self.right_matrix[correct_row], self.right_matrix[i]
+        for _ in range(self.n):
+            for i in range(self.n):
+                max_el = self.matrix[i][i]
+                correct_row = i
+                for j in range(self.n):
+                    if i != j and abs(self.matrix[i][j]) > max_el:
+                        max_el = self.matrix[i][j]
+                        correct_row = j
+                self.matrix[i], self.matrix[correct_row] = self.matrix[correct_row], self.matrix[i]
+                self.right_matrix[i], self.right_matrix[correct_row] = self.right_matrix[correct_row], self.right_matrix[i]
         print('Permutated matrix:', self.matrix)
         print('Permutated right matrix:', self.right_matrix)
 
@@ -83,6 +89,12 @@ class IterativeMethod:
         for i in range(self.n):
             summ = 0
             for j in range(self.n):
-                summ += abs(self.matrix[i][j])
+                if i != j:
+                    try:
+                        summ += abs(self.matrix[i][j] / self.matrix[i][i])
+                    except ZeroDivisionError:
+                        print('Matrix norm: inf')
+                        return 1000
             res = max(res, summ)
         print('Matrix norm:', res)
+        return res
